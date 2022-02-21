@@ -1,11 +1,9 @@
 {
     "name": "home-work",
     "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "type": "commonjs",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "cross-env NODE_ENV=production node ./server.js",
+        "start:dev": "cross-env NODE_ENV=development nodemon ./server.js"
     },
     "repository": {
         "type": "git",
@@ -16,9 +14,13 @@
     "bugs": {
         "url": "https://github.com/Butanasi/node-home-work/issues"
     },
-    "homepage": "https://github.com/Butanasi/node-home-work#readme",
     "dependencies": {
         "commander": "9.0.0",
+        "cors": "^2.8.5",
+        "cross-env": "^7.0.3",
+        "express": "^4.17.3",
+        "joi": "17.6.0",
+        "morgan": "^1.10.0",
         "nodemon": "^2.0.15"
     }
 }
