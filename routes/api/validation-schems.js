@@ -1,39 +1,59 @@
 const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 
 const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/
 const numberPattern = /\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}/
 const namePattern = /^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$/
 
 
-const schemaAddContact = Joi.object({
+const schemaCreateContact = Joi.object({
     name: Joi.string()
         .pattern(namePattern)
         .min(3)
         .max(30)
         .required(),
 
-    number: Joi.string()
+    phone: Joi.string()
         .pattern(numberPattern)
         .required(),
 
     email: Joi.string()
-        .pattern(emailPattern)
+        .pattern(emailPattern),
+
+    favorite: Joi.boolean()
+
 })
 
 
-const schemaUpdayContact = Joi.object({
+const schemaUpdateContact = Joi.object({
     name: Joi.string()
         .pattern(namePattern)
         .min(3)
         .max(30),
 
-    number: Joi.string()
+    phone: Joi.string()
         .pattern(numberPattern),
 
 
     email: Joi.string()
-        .pattern(emailPattern)
+        .pattern(emailPattern),
+
+    favorite: Joi.boolean()
+
 })
 
+const schemaMongoId = Joi.object({
+    contactId: Joi.objectId().required(),
+})
 
-module.exports = { schemaAddContact, schemaUpdayContact }
+const schemaFavorite = Joi.object({
+    favorite: Joi.boolean().required()
+}).messages({ "message": "missing field favorite" })
+
+
+module.exports = {
+    schemaCreateContact,
+    schemaUpdateContact,
+    schemaMongoId,
+    schemaFavorite
+}
