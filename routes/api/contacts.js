@@ -1,47 +1,41 @@
 const express = require('express')
-const contactModel = require('../../db/contacts')
-const routes = express.Router()
-const { schemaAddContact, schemaUpdayContact } = require('./validation-schems')
-const { validationBody } = require('../../middlewares/validation')
+const {
+    listContacts,
+    getContactById,
+    deleteContact,
+    createContact,
+    updateContact,
+    updateStatusContact
+} = require('../../controllers/contacts')
+const {
+    schemaCreateContact,
+    schemaUpdateContact,
+    schemaMongoId,
+    schemaFavorite
+} = require('./validation-schems')
+const {
+    validationBody,
+    validationParams
+} = require('../../middlewares/validation')
+const router = express.Router()
 
-routes.get('/', async(req, res, next) => {
-    const contacts = await contactModel.listContacts()
-    res.json({ status: 'success', code: 200, payload: { contacts } })
-})
 
-routes.get('/:contactId', async(req, res, next) => {
-    const contact = await contactModel.getContactById(req.params.contactId)
-    if (contact) {
-        return res.json({ status: 'success', code: 200, payload: { contact } })
-    }
-    return res
-        .status(404)
-        .json({ status: 'error', code: 404, message: 'NOT FOUND' })
-})
+router.get('/', listContacts)
 
-routes.post('/', validationBody(schemaAddContact), async(req, res, next) => {
-    const contact = await contactModel.addContact(req.body)
-    res.status(201).json({ status: 'success', code: 201, payload: { contact } })
-})
+router.get('/:contactId', validationParams(schemaMongoId), getContactById)
 
-routes.delete('/:contactId', async(req, res, next) => {
-    const contact = await contactModel.removeContact(req.params.contactId)
-    if (contact) {
-        return res.json({ status: 'success', code: 200, payload: { contact } })
-    }
-    return res
-        .status(404)
-        .json({ status: 'error', code: 404, message: 'NOT FOUND' })
-})
+router.post('/', validationBody(schemaCreateContact), createContact)
 
-routes.put('/:contactId', validationBody(schemaUpdayContact), async(req, res, next) => {
-    const contact = await contactModel.updayContact(req.params.contactId, req.body)
-    if (contact) {
-        return res.json({ status: 'success', code: 200, payload: { contact } })
-    }
-    return res
-        .status(404)
-        .json({ status: 'error', code: 404, message: 'NOT FOUND' })
-})
+router.delete('/:contactId', validationParams(schemaMongoId), deleteContact)
 
-module.exports = routes
+router.put('/:contactId', validationBody(schemaUpdateContact), updateContact)
+
+router.patch(
+    '/:contactId/favorite', [
+        validationParams(schemaMongoId),
+        validationBody(schemaFavorite)
+    ],
+    updateStatusContact,
+)
+
+module.exports = router
